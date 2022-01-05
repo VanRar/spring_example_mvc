@@ -2,12 +2,15 @@ package org.vanrar.spring.mvc;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.validation.Valid;
+
 
 @Controller
-//если несколько контроллеров, то надо делать @RequestMapping на весь контроллер, что бы не было конфликтов, напрамиер
+//если несколько контроллеров, то надо делать @RequestMapping на весь контроллер, что бы не было конфликтов, например
 @RequestMapping("/employee")
 public class MyController {
 
@@ -26,9 +29,17 @@ public class MyController {
     }
 
     //заменяем на  @RequestParam - позволяет связывать поле формы с параметрами метода из контроллера
+
+    /**
+     * bindingResult - возращает результат валидации
+     */
     @RequestMapping("/showDetails")
-    public String showEmpDetails(@ModelAttribute("employee") Employee emp) { //указываем, что show-emp-details-view может использовать аттрибут модели employee
-        //тут можем дернуть значения из emp и откорректировать их через set полей
-        return "show-emp-details-view";
+    public String showEmpDetails(@Valid @ModelAttribute("employee") Employee emp, BindingResult bindingResult) { //указываем, что show-emp-details-view может использовать аттрибут модели employee
+
+        if(bindingResult.hasErrors()){
+            return "ask-emp-details-view";
+        }else {
+            return "show-emp-details-view";//хотя можно и без else, итак если в if зайдёт, то дальше не пойдёт и наоборот
+        }
     }
 }
